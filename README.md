@@ -54,23 +54,23 @@
 ### 1. 악보 관리
 - PDF/이미지 업로드 및 자동 악보 변환
 - MusicXML 형식 지원
-<img src="/uploads/cf84510839c4d42a47967e2cea4ff8e9/악보업로드_디바이스_.png" alt="악보업로드_디바이스_" width="300">
+<img src="./screenshot/1.png" alt="악보업로드_디바이스_" width="300">
 
 <br>
 
 - 악보 검색 (Elasticsearch 기반 전문 검색)
-<img src="/uploads/881a3066f43c241631b074b62120be7e/스토어악보검색_디바이스_.png" alt="스토어악보검색_디바이스_" width="300">
+<img src="./screenshot/2.png" alt="스토어악보검색_디바이스_" width="300">
 
 <br>
 
 - 개인 악보 라이브러리 관리
-<img src="/uploads/b29564973dc5be10c8df970fe6791804/라이브러리_디바이스_.png" alt="라이브러리_디바이스_" width="300">
+<img src="./screenshot/3.png" alt="라이브러리_디바이스_" width="300">
 
 
 ### 2. 자동 악보 스크롤
 - CNN 기반 실시간 다중 음 인식
 - MusicXML에서 얻은 음표와 AI가 인식한 음이 같다면 커서를 다음으로 이동
-![악보음인식](/uploads/67c77bf69ceb2ac8571f5c9db3d7c99b/악보음인식.gif)
+![악보음인식](./screenshot/4.gif)
 
 ### 3. AI 기반 서비스
 - **OMR**: 고정밀 악보 인식 (Audiveris 5.7.1)
@@ -83,7 +83,7 @@
 - 반복 재생
 - 박자 늦추기
 - 피아노의 경우, 왼손 오른손 따로 듣기
-![연습모드_디바이스_](/uploads/73a70cb12fdb2d5f568c96a318423ec3/연습모드_디바이스_.png)
+![연습모드_디바이스_](./screenshot/5.gif)
 
 ### 5. 소셜 기능
 - Google OAuth2 로그인
