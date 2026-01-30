@@ -1,0 +1,92 @@
+spring:
+  application:
+    name: crescendo
+  datasource:
+#    로컬
+#    url: ${DB_URL:jdbc:postgresql://localhost:5432/crescendodb}
+#    서버
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres-service:5432/crescendo_db}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_WEB_CLIENT_ID}
+            client-secret: ${GOOGLE_WEB_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION:120960000000}
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION:120960000000}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+      show-sql: true
+
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS}
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
+
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis-service}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: ${REDIS_TIMEOUT:6000}
+
+logging:
+  level:
+    org.elasticsearch.client: TRACE
+    com.d102.crescendo.domain.sheet.service.MusicXmlService: DEBUG
+    com.d102.crescendo.domain.sheet.service: DEBUG
+    com.d102.crescendo.domain.sheet.controller: DEBUG
+
+management:
+    endpoints:
+      web:
+        exposure:
+          include: health,info
+    endpoint:
+      health:
+        probes:
+          enabled: true
+
+server:
+  port: ${SERVER_PORT:8080}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET:p31d102}
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+
+file:
+  musicxml:
+    preview:
+
+

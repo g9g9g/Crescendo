@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/SSAFY/Desktop/D102/backend/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

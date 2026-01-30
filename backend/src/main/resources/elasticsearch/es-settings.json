@@ -1,0 +1,59 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "sheet_synonyms": {
+          "type": "synonym",
+          "synonyms": [
+            "bigbang, 빅뱅",
+            "lemon, 레몬",
+            "rose, 로제"
+          ]
+        },
+        "category_synonyms": {
+          "type": "synonym_graph",
+          "synonyms": [
+            "piano, 피아노",
+            "guitar, 기타",
+            "classic, 클래식",
+            "pop, 팝",
+            "newage, 뉴에이지",
+            "ost, 오에스티",
+            "children, 동요",
+            "ccm, 씨씨엠"
+          ]
+        }
+      },
+      "analyzer": {
+        "sheets_title_analyzer": {
+          "tokenizer": "nori_tokenizer",
+          "filter": [
+            "nori_part_of_speech",
+            "nori_readingform",
+            "lowercase",
+            "sheet_synonyms"
+          ]
+        },
+        "sheets_composer_analyzer": {
+          "char_filter": [
+            "html_strip"
+          ],
+          "tokenizer": "nori_tokenizer",
+          "filter": [
+            "nori_part_of_speech",
+            "nori_readingform",
+            "lowercase",
+            "sheet_synonyms"
+          ]
+        },
+        "sheets_category_analyzer": {
+          "tokenizer": "keyword",
+          "filter": [
+            "lowercase",
+            "category_synonyms"
+          ]
+        }
+      }
+    }
+  }
+}

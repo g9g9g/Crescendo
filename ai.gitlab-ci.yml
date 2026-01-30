@@ -1,0 +1,70 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_REGISTRY: sangheon95
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  KUBE_NAMESPACE: apps
+
+# AI Server Build (OMR, Audio Processing, Embedding)
+build-ai-server:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+  script:
+    - cd ai/ai-server
+    - docker build --no-cache -t $DOCKER_REGISTRY/crescendo-ai-server:$IMAGE_TAG .
+    - docker tag $DOCKER_REGISTRY/crescendo-ai-server:$IMAGE_TAG $DOCKER_REGISTRY/crescendo-ai-server:latest
+    - docker push $DOCKER_REGISTRY/crescendo-ai-server:$IMAGE_TAG
+    - docker push $DOCKER_REGISTRY/crescendo-ai-server:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "ai"'
+      changes:
+        - ai/ai-server/**/*
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "ai"'
+      when: manual
+      allow_failure: true
+
+# Deploy AI Services
+deploy-ai:
+  stage: deploy
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: [""]
+  needs:
+    - job: build-ai-server
+      optional: true
+
+  before_script:
+    - mkdir -p ~/.kube
+    - echo "$KUBE_CONFIG" > ~/.kube/config
+    - chmod 600 ~/.kube/config
+  script:
+    - kubectl create secret docker-registry dockerhub-secret
+      --docker-server=https://index.docker.io/v1/
+      --docker-username=$DOCKER_HUB_USER
+      --docker-password=$DOCKER_HUB_TOKEN
+      -n $KUBE_NAMESPACE
+      --dry-run=client -o yaml | kubectl apply -f -
+
+    - kubectl apply -f ai/k8s/ai-server/
+    - kubectl apply -f ai/k8s/ingress.yaml
+    - kubectl delete pod -l app=ai-server -n $KUBE_NAMESPACE --wait=false
+    - kubectl rollout status deployment/ai-server -n $KUBE_NAMESPACE --timeout=8m
+
+    # Temporarily disabled PDF rollout check
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "ai"'
+      changes:
+        - ai/ai-server/**/*
+        - ai/k8s/**/*
+        - .gitlab-ci.yml
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "ai"'
+      when: manual
+      allow_failure: true

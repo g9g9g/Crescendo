@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crescendo-backend
+  namespace: apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: crescendo-backend
+  template:
+    metadata:
+      labels:
+        app: crescendo-backend
+    spec:
+      containers:
+      - name: crescendo-backend
+        image: sangheon95/crescendo-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: TZ
+          value: "Asia/Seoul"
+        # 평문 설정
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://postgres-service:5432/crescendo_db"
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        
+        # elasticsearch:
+        - name : ELASTICSEARCH_URIS
+          value: "https://86ace069173c41a58eb53ab3e613e2fa.ap-northeast-2.aws.elastic-cloud.com:443"
+        - name : ELASTICSEARCH_USERNAME
+          value: "elastic"
+        - name : ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: elastic_password
+        #redis
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:  
+            secretKeyRef:
+              name: crescendo-secrets
+              key: redis-password  # ← Secret 사용!
+        - name: REDIS_TIMEOUT
+          value: "6000"
+          
+        # Secret에서 가져올 민감 정보
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: db-username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: db-password
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: db-username
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: db-password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: jwt-secret
+        - name: GOOGLE_WEB_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: google-client-id
+        - name: GOOGLE_WEB_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: google-client-secret
+        - name: AWS_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: aws-access-key
+        - name: AWS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: crescendo-secrets
+              key: aws-secret-key
+
+        # Firebase 서비스 계정 Secret mount
+        volumeMounts:
+          - name: firebase-secret
+            mountPath: /app/firebase/firebase-key.json
+            subPath: firebase-key.json      
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        startupProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 18
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 90
+          periodSeconds: 5
+
+      volumes:
+        - name: firebase-secret
+          secret:
+            secretName: firebase-secret
+            
+      imagePullSecrets:
+      - name: dockerhub-secret

@@ -1,0 +1,84 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.7'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.d102'
+version = '0.0.1-SNAPSHOT'
+description = 'crescendo project'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'com.pgvector:pgvector:0.1.4'
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'co.elastic.clients:elasticsearch-java:8.15.0'
+
+	//Firebase
+	implementation 'com.google.firebase:firebase-admin:9.7.0'
+
+	// S3
+	implementation 'software.amazon.awssdk:s3:2.25.20'
+	implementation 'software.amazon.awssdk:auth:2.25.20'
+
+	// OAuth2
+	implementation 'com.google.api-client:google-api-client:2.2.0'
+	implementation 'com.google.http-client:google-http-client-jackson2:1.43.3'
+
+	// Jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+
+	// DB
+	runtimeOnly 'org.postgresql:postgresql'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'com.h2database:h2'
+
+	// MusicXML (Audiveris ProxyMusic) - Jakarta 호환 버전
+	implementation "org.audiveris:proxymusic:4.0.3"
+
+
+	// JAXB (Jakarta; Spring Boot 3.x / JDK 21 호환)
+	implementation "jakarta.xml.bind:jakarta.xml.bind-api:4.0.0"
+	implementation "org.glassfish.jaxb:jaxb-runtime:4.0.5"
+
+	// (필요 시) Jakarta Activation - 일부 환경에서 필요
+	implementation "jakarta.activation:jakarta.activation-api:2.1.2"
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

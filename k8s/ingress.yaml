@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crescendo-backend-ingress
+  namespace: apps
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts: [cresd102.duckdns.org]
+    secretName: crescendo-tls
+  rules:
+  - host: cresd102.duckdns.org
+    http:
+      paths:
+      # Swagger 경로들 (rewrite 없음!)
+      - path: /swagger-ui
+        pathType: Prefix
+        backend:
+          service:
+            name: crescendo-backend-service
+            port:
+              number: 8080
+      
+      - path: /v3/api-docs
+        pathType: Prefix
+        backend:
+          service:
+            name: crescendo-backend-service
+            port:
+              number: 8080
+      
+      # API 경로
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: crescendo-backend-service
+            port:
+              number: 8080
+              
